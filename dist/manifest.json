@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Qurasearch",
+  "version": "1.0.0",
+  "description": "Select text on any page, right-click to save it with its source into the side panel, and organize clips into groups.",
+  "icons": {
+    "16": "src/assets/icon-16.png",
+    "32": "src/assets/icon-32.png",
+    "48": "src/assets/icon-48.png",
+    "128": "src/assets/icon-128.png"
+  },
+  "action": {
+    "default_title": "Open Qurasearch",
+    "default_icon": {
+      "16": "src/assets/icon-16.png",
+      "32": "src/assets/icon-32.png",
+      "48": "src/assets/icon-48.png",
+      "128": "src/assets/icon-128.png"
+    }
+  },
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "sidePanel",
+    "favicon",
+    "activeTab"
+  ]
+}

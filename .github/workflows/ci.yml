@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-build:
+    name: Test & build (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Verify bundle is CSP-safe (no eval)
+        run: |
+          if grep -rEn "\beval\(|new Function\(" dist/assets/*.js; then
+            echo "::error::Found eval/new Function in the bundle — violates the MV3 CSP (script-src 'self')"
+            exit 1
+          fi
+          echo "OK: no eval/new Function in the production bundle"
+
+      - name: Upload built extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: qurasearch-dist-node${{ matrix.node }}
+          path: dist
+          if-no-files-found: error
