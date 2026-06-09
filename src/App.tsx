@@ -15,6 +15,7 @@ import {
   reorderItems,
   setActiveGroup,
   clearLastCaptured,
+  setStoreErrorHandler,
   buildBackup,
   importBackup,
 } from './store'
@@ -91,6 +92,13 @@ export function App() {
     }
   }, [s.groups, view])
 
+  // Surface storage write failures (e.g. quota exceeded) to the user.
+  useEffect(() => {
+    setStoreErrorHandler((message) => showSnackbar(message))
+    return () => setStoreErrorHandler(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // ---- navigation ----
   const goHome = () => setView({ kind: 'home' })
   const openGroup = (id: string) => setView({ kind: 'group', groupId: id })
@@ -106,7 +114,18 @@ export function App() {
         .catch(() => showSnackbar('Copy failed'))
     },
     onOpen: (item) => {
-      if (item.url) chrome.tabs.create({ url: item.url })
+      if (!item.url) return
+      try {
+        const u = new URL(item.url)
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+          showSnackbar('Can only open http(s) links')
+          return
+        }
+      } catch {
+        showSnackbar('Invalid link')
+        return
+      }
+      chrome.tabs.create({ url: item.url }).catch(() => showSnackbar('Could not open link'))
     },
     onMove: (item, groupId) => {
       void moveItem(item.id, groupId)

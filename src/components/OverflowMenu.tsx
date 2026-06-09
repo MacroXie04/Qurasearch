@@ -27,7 +27,13 @@ export function OverflowMenu({
 
   return (
     <span className="menu-anchor">
-      <IconButton id={anchorId} aria-label={ariaLabel} onClick={() => setOpen((o) => !o)}>
+      <IconButton
+        id={anchorId}
+        aria-label={ariaLabel}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
         {icon ?? <MoreIcon />}
       </IconButton>
       <Menu

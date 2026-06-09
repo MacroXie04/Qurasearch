@@ -1,7 +1,7 @@
 // Single source of truth for the side panel: reads/writes chrome.storage and
 // pushes updates into React via useSyncExternalStore + chrome.storage.onChanged.
 import { useSyncExternalStore } from 'react'
-import { type Backup, BACKUP_VERSION, type Group, type Item } from './types'
+import { type Backup, BACKUP_VERSION, type Group, type Item, PALETTE } from './types'
 import { getLocalData, uid, type LastCaptured, type LocalData } from './storage'
 
 export interface StoreState {
@@ -108,10 +108,25 @@ export function groupName(s: StoreState, groupId: string | null): string {
 // computing its write (read-modify-write), so a concurrent capture from the
 // background worker can't be clobbered by a stale in-memory snapshot.
 // ---------------------------------------------------------------------------
+// Optional sink for surfacing storage write failures (e.g. quota exceeded) to the UI.
+let storeErrorHandler: (message: string) => void = () => {}
+export function setStoreErrorHandler(fn: (message: string) => void): void {
+  storeErrorHandler = fn
+}
+
+async function writeLocal(patch: Partial<LocalData>): Promise<void> {
+  try {
+    await chrome.storage.local.set(patch)
+  } catch (e) {
+    console.error('[Qurasearch] storage write failed', e)
+    storeErrorHandler('Could not save — storage may be full')
+  }
+}
+
 async function mutateLocal(fn: (data: LocalData) => Partial<LocalData>): Promise<void> {
   const fresh = await getLocalData()
   const patch = fn(fresh)
-  if (Object.keys(patch).length) await chrome.storage.local.set(patch)
+  if (Object.keys(patch).length) await writeLocal(patch)
 }
 
 export async function addGroup(name: string, color: string): Promise<string> {
@@ -142,7 +157,7 @@ export async function deleteGroup(id: string): Promise<void> {
 }
 
 export async function setDefaultGroup(id: string | null): Promise<void> {
-  await chrome.storage.local.set({ pinnedGroupId: id })
+  await writeLocal({ pinnedGroupId: id })
 }
 
 export async function deleteItem(id: string): Promise<void> {
@@ -194,25 +209,81 @@ export function buildBackup(): Backup {
   }
 }
 
-export async function importBackup(backup: Backup, mode: 'merge' | 'replace'): Promise<void> {
-  const inGroups = Array.isArray(backup.groups) ? backup.groups : []
-  const inItems = Array.isArray(backup.items) ? backup.items : []
-  if (mode === 'replace') {
-    await chrome.storage.local.set({
-      groups: inGroups,
-      items: inItems,
-      pinnedGroupId: backup.pinnedGroupId ?? null,
+/**
+ * Validate + normalize imported records: drop malformed entries, de-dupe by id,
+ * and null out any item.groupId that doesn't resolve to an imported group.
+ * Objects are rebuilt field-by-field, so unexpected keys (e.g. `__proto__`) in
+ * the parsed JSON can't leak into the store.
+ */
+function sanitizeImport(rawGroups: unknown, rawItems: unknown): { groups: Group[]; items: Item[] } {
+  const now = Date.now()
+  const num = (v: unknown, d: number) => (typeof v === 'number' && Number.isFinite(v) ? v : d)
+  const str = (v: unknown, d = '') => (typeof v === 'string' ? v : d)
+
+  const groups: Group[] = []
+  const seenG = new Set<string>()
+  for (const raw of Array.isArray(rawGroups) ? rawGroups : []) {
+    if (!raw || typeof raw !== 'object') continue
+    const o = raw as Record<string, unknown>
+    if (typeof o.id !== 'string' || seenG.has(o.id)) continue
+    seenG.add(o.id)
+    groups.push({
+      id: o.id,
+      name: str(o.name, 'Untitled'),
+      color: str(o.color, PALETTE[0]),
+      order: num(o.order, now),
+      createdAt: num(o.createdAt, now),
     })
+  }
+
+  const groupIds = new Set(groups.map((g) => g.id))
+  const items: Item[] = []
+  const seenI = new Set<string>()
+  for (const raw of Array.isArray(rawItems) ? rawItems : []) {
+    if (!raw || typeof raw !== 'object') continue
+    const o = raw as Record<string, unknown>
+    if (typeof o.id !== 'string' || seenI.has(o.id) || typeof o.text !== 'string') continue
+    seenI.add(o.id)
+    const groupId = typeof o.groupId === 'string' && groupIds.has(o.groupId) ? o.groupId : null
+    items.push({
+      id: o.id,
+      text: o.text,
+      url: str(o.url),
+      host: str(o.host),
+      title: str(o.title),
+      groupId,
+      order: num(o.order, now),
+      createdAt: num(o.createdAt, now),
+    })
+  }
+  return { groups, items }
+}
+
+export async function importBackup(backup: Backup, mode: 'merge' | 'replace'): Promise<void> {
+  const { groups: inGroups, items: inItems } = sanitizeImport(backup?.groups, backup?.items)
+  const validPin = (ids: Set<string>) =>
+    typeof backup?.pinnedGroupId === 'string' && ids.has(backup.pinnedGroupId)
+      ? backup.pinnedGroupId
+      : null
+
+  if (mode === 'replace') {
+    const ids = new Set(inGroups.map((g) => g.id))
+    await writeLocal({ groups: inGroups, items: inItems, pinnedGroupId: validPin(ids) })
     return
   }
-  // merge — de-dupe by id, keeping existing entries.
+  // merge — de-dupe by id, keeping existing entries; re-home dangling groupIds.
   await mutateLocal(({ groups, items, pinnedGroupId }) => {
     const groupIds = new Set(groups.map((g) => g.id))
     const itemIds = new Set(items.map((i) => i.id))
+    const mergedGroups = [...groups, ...inGroups.filter((g) => !groupIds.has(g.id))]
+    const validIds = new Set(mergedGroups.map((g) => g.id))
+    const newItems = inItems
+      .filter((i) => !itemIds.has(i.id))
+      .map((i) => (i.groupId && !validIds.has(i.groupId) ? { ...i, groupId: null } : i))
     return {
-      groups: [...groups, ...inGroups.filter((g) => !groupIds.has(g.id))],
-      items: [...items, ...inItems.filter((i) => !itemIds.has(i.id))],
-      pinnedGroupId: pinnedGroupId ?? backup.pinnedGroupId ?? null,
+      groups: mergedGroups,
+      items: [...items, ...newItems],
+      pinnedGroupId: pinnedGroupId ?? validPin(validIds),
     }
   })
 }

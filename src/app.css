@@ -271,7 +271,9 @@
   left: 50%;
   bottom: 16px;
   transform: translateX(-50%);
-  z-index: 20;
+  /* Below an open overflow menu (which uses the top layer / z-index 20), above the
+     app bar (4) and FAB (5). */
+  z-index: 15;
   display: flex;
   align-items: center;
   gap: 8px;

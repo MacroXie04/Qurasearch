@@ -58,7 +58,13 @@ export function SearchView({
               aria-label="Search clips"
             />
             {q ? (
-              <IconButton aria-label="Clear search" onClick={() => setQ('')}>
+              <IconButton
+                aria-label="Clear search"
+                onClick={() => {
+                  setQ('')
+                  inputRef.current?.focus()
+                }}
+              >
                 <CloseIcon size={20} />
               </IconButton>
             ) : null}

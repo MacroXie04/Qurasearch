@@ -72,8 +72,14 @@ export function GroupList({
               >
                 <InboxIcon />
               </span>
-              <div slot="headline">Ungrouped</div>
-              <div slot="end" className="row-trailing">
+              <div slot="headline">
+                Ungrouped
+                <span className="sr-only">
+                  {' · '}
+                  {ungroupedCount} clip{ungroupedCount === 1 ? '' : 's'}
+                </span>
+              </div>
+              <div slot="end" className="row-trailing" aria-hidden="true">
                 <span className="pill">{ungroupedCount}</span>
                 <ChevronRightIcon size={20} />
               </div>
@@ -89,10 +95,15 @@ export function GroupList({
                   </span>
                   <div slot="headline" className="ellipsis">
                     {g.name}
+                    <span className="sr-only">
+                      {' · '}
+                      {count} clip{count === 1 ? '' : 's'}
+                      {isDefault ? ', default group' : ''}
+                    </span>
                   </div>
-                  <div slot="end" className="row-trailing">
+                  <div slot="end" className="row-trailing" aria-hidden="true">
                     {isDefault ? (
-                      <span className="pin-mark" title="Default group">
+                      <span className="pin-mark">
                         <PushPinIcon size={18} />
                       </span>
                     ) : null}

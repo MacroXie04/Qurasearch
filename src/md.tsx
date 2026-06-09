@@ -8,7 +8,6 @@ import { createComponent } from '@lit/react'
 import { MdIconButton } from '@material/web/iconbutton/icon-button.js'
 import { MdFilledButton } from '@material/web/button/filled-button.js'
 import { MdTextButton } from '@material/web/button/text-button.js'
-import { MdFilledTonalButton } from '@material/web/button/filled-tonal-button.js'
 import { MdFab } from '@material/web/fab/fab.js'
 import { MdList } from '@material/web/list/list.js'
 import { MdListItem } from '@material/web/list/list-item.js'
@@ -17,8 +16,6 @@ import { MdMenuItem } from '@material/web/menu/menu-item.js'
 import { MdDivider } from '@material/web/divider/divider.js'
 import { MdDialog } from '@material/web/dialog/dialog.js'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
-import { MdRipple } from '@material/web/ripple/ripple.js'
-import { MdFocusRing } from '@material/web/focus/md-focus-ring.js'
 
 export const IconButton = createComponent({
   react: React,
@@ -36,12 +33,6 @@ export const TextButton = createComponent({
   react: React,
   tagName: 'md-text-button',
   elementClass: MdTextButton,
-})
-
-export const FilledTonalButton = createComponent({
-  react: React,
-  tagName: 'md-filled-tonal-button',
-  elementClass: MdFilledTonalButton,
 })
 
 export const Fab = createComponent({
@@ -93,16 +84,4 @@ export const OutlinedTextField = createComponent({
   tagName: 'md-outlined-text-field',
   elementClass: MdOutlinedTextField,
   events: { onTfInput: 'input', onTfChange: 'change' },
-})
-
-export const Ripple = createComponent({
-  react: React,
-  tagName: 'md-ripple',
-  elementClass: MdRipple,
-})
-
-export const FocusRing = createComponent({
-  react: React,
-  tagName: 'md-focus-ring',
-  elementClass: MdFocusRing,
 })

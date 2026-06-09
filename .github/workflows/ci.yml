@@ -36,11 +36,11 @@ jobs:
 
       - name: Verify bundle is CSP-safe (no eval)
         run: |
-          if grep -rEn "\beval\(|new Function\(" dist/assets/*.js; then
+          if grep -rEn "\beval\(|new Function\(" dist --include='*.js'; then
             echo "::error::Found eval/new Function in the bundle — violates the MV3 CSP (script-src 'self')"
             exit 1
           fi
-          echo "OK: no eval/new Function in the production bundle"
+          echo "OK: no eval/new Function in any built JS"
 
       - name: Upload built extension
         uses: actions/upload-artifact@v4

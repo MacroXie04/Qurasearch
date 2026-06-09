@@ -180,6 +180,17 @@ body {
   outline: 2px solid var(--md-sys-color-primary);
   outline-offset: 2px;
 }
+/* Material Web controls render their own focus ring — suppress the global one on
+   their hosts so they don't show a double ring. */
+md-icon-button:focus-visible,
+md-filled-button:focus-visible,
+md-text-button:focus-visible,
+md-list-item:focus-visible,
+md-menu-item:focus-visible,
+md-fab:focus-visible,
+md-outlined-text-field:focus-visible {
+  outline: none;
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
