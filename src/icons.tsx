@@ -177,6 +177,20 @@ export const BookmarkIcon = (p: IconProps) => (
   </Svg>
 )
 
+export const ShareIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M12 14V4" />
+    <path d="m8 7 4-4 4 4" />
+    <path d="M6 11v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-8" />
+  </Svg>
+)
+
+export const ExpandMoreIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="m6 9 6 6 6-6" />
+  </Svg>
+)
+
 export const DragIcon = (p: IconProps) => (
   <Svg {...p} stroke="none" fill="currentColor">
     <circle cx="9" cy="6" r="1.4" />

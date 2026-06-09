@@ -1,0 +1,207 @@
+/* Standalone export page (full browser tab). Reuses the MD3 tokens from
+   theme.css; .pill/.color-dot/.ellipsis and the type scale come from app.css
+   and theme.css. */
+
+.export-page {
+  display: grid;
+  grid-template-columns: 400px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'header header'
+    'aside main';
+  gap: 16px 24px;
+  box-sizing: border-box;
+  max-width: 1280px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.export-header {
+  grid-area: header;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.export-header h1 {
+  margin: 0;
+}
+
+.export-count {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.export-aside {
+  grid-area: aside;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.export-panel {
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: var(--shape-md);
+  padding: 14px 16px;
+}
+
+.export-panel h2,
+.export-panel h3 {
+  margin: 0 0 8px;
+}
+
+.export-sub {
+  margin-top: 16px !important;
+}
+
+.export-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.export-select-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.text-action {
+  border: none;
+  background: none;
+  padding: 6px 10px;
+  border-radius: var(--shape-full);
+  color: var(--md-sys-color-primary);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.text-action:hover {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.export-empty {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.export-groups {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.export-group-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.export-group-icon {
+  display: inline-flex;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.export-group-name {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 8px 4px;
+  font: inherit;
+  color: var(--md-sys-color-on-surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.export-clips {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0 0 0 36px;
+}
+
+.export-clip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.export-clip-text {
+  overflow: hidden;
+  color: var(--md-sys-color-on-surface-variant);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.export-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.export-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.export-preview {
+  flex: 1;
+  margin: 0;
+  padding: 16px;
+  overflow: auto;
+  background: var(--md-sys-color-surface-container);
+  border-radius: var(--shape-md);
+  color: var(--md-sys-color-on-surface);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  user-select: text;
+}
+
+.export-truncated {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+@media (max-width: 760px) {
+  .export-page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(320px, 1fr);
+    grid-template-areas:
+      'header'
+      'aside'
+      'main';
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .export-aside {
+    overflow-y: visible;
+  }
+}

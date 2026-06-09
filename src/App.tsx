@@ -125,7 +125,16 @@ export function App() {
         showSnackbar('Invalid link')
         return
       }
-      chrome.tabs.create({ url: item.url }).catch(() => showSnackbar('Could not open link'))
+      // The background opens the tab and injects the highlighter that scrolls
+      // to the clip. If messaging fails for any reason, open the tab plainly.
+      const fallback = () =>
+        chrome.tabs.create({ url: item.url }).catch(() => showSnackbar('Could not open link'))
+      chrome.runtime.sendMessage({ type: 'qura:jump', itemId: item.id }).then(
+        (res: { ok?: boolean } | undefined) => {
+          if (!res?.ok) void fallback()
+        },
+        () => void fallback(),
+      )
     },
     onMove: (item, groupId) => {
       void moveItem(item.id, groupId)
@@ -170,6 +179,13 @@ export function App() {
           },
         }),
     }
+  }
+
+  // ---- export page ----
+  const onOpenExport = () => {
+    chrome.tabs
+      .create({ url: chrome.runtime.getURL('export.html') })
+      .catch(() => showSnackbar('Could not open the export page'))
   }
 
   // ---- backup ----
@@ -250,6 +266,7 @@ export function App() {
         onOpenInbox={openInbox}
         onNewGroup={openNewGroup}
         onSearch={openSearch}
+        onOpenExport={onOpenExport}
         onExport={onExport}
         onImport={onImport}
       />

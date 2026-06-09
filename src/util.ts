@@ -26,8 +26,8 @@ export function isLongText(text: string): boolean {
   return text.length > 180 || text.split('\n').length > 4
 }
 
-export function downloadJson(filename: string, data: unknown): void {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+export function downloadText(filename: string, text: string, mime: string): void {
+  const blob = new Blob([text], { type: mime })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -36,6 +36,10 @@ export function downloadJson(filename: string, data: unknown): void {
   a.click()
   a.remove()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+export function downloadJson(filename: string, data: unknown): void {
+  downloadText(filename, JSON.stringify(data, null, 2), 'application/json')
 }
 
 export function readJsonFile(file: File): Promise<unknown> {

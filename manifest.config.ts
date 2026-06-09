@@ -33,5 +33,8 @@ export default defineManifest({
   side_panel: {
     default_path: 'index.html',
   },
-  permissions: ['contextMenus', 'storage', 'sidePanel', 'favicon', 'activeTab'],
+  permissions: ['contextMenus', 'storage', 'sidePanel', 'favicon', 'activeTab', 'scripting'],
+  // Jump-to-highlight injects a locator script at capture time and the
+  // highlighter into the reopened source page — both need host access.
+  host_permissions: ['<all_urls>'],
 })

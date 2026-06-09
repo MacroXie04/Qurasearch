@@ -1,4 +1,7 @@
 // Shared data model and constants for Qurasearch.
+import { type Locator } from './locate/locator'
+
+export { type Locator }
 
 /** Sentinel value for `activeGroupId` when the Inbox (Ungrouped) detail view is open. */
 export const UNGROUPED = '__ungrouped__'
@@ -21,6 +24,47 @@ export interface Item {
   groupId: string | null
   order: number
   createdAt: number
+  /** DOM context for jump-back highlighting. Absent on clips captured before
+      this feature or on pages where the capture script could not run. */
+  locator?: Locator
+}
+
+// ---------------------------------------------------------------------------
+// Jump-to-highlight messaging (panel ⇄ background ⇄ injected script)
+// ---------------------------------------------------------------------------
+
+/** Panel → background: open `itemId`'s source and highlight the clip there. */
+export interface JumpRequest {
+  type: 'qura:jump'
+  itemId: string
+}
+
+/** Injected script → background: "what am I supposed to highlight in this tab?" */
+export interface GetJumpRequest {
+  type: 'qura:get-jump'
+}
+
+/** Injected script → background: highlight outcome (ok deletes the pending entry). */
+export interface JumpResult {
+  type: 'qura:jump-result'
+  ok: boolean
+}
+
+export type QuraMessage = JumpRequest | GetJumpRequest | JumpResult
+
+/** What the injected script needs to find the clip on the page. */
+export interface JumpPayload {
+  text: string
+  locator?: Locator
+}
+
+/** Session-storage entry under `pendingJumps`, keyed by tabId. */
+export interface PendingJump extends JumpPayload {
+  itemId: string
+  createdAt: number
+  /** Set once the highlighter has been injected, so a later navigation of the
+      same tab does not re-inject into an unrelated page. */
+  injected?: boolean
 }
 
 export const BACKUP_VERSION = 1

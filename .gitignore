@@ -3,3 +3,6 @@ node_modules
 *.log
 .vite
 .cache
+.idea
+# unzipped copy of qurasearch.zip (manual install testing)
+/qurasearch/

@@ -51,11 +51,29 @@ export function makeChrome(
     onInstalled: [] as Array<(details: any) => void>,
     onStartup: [] as Array<() => void>,
     onConnect: [] as Array<(port: any) => void>,
+    onMessage: [] as Array<(msg: any, sender: any, sendResponse: (v: any) => void) => unknown>,
+    onUpdated: [] as Array<(tabId: number, changeInfo: any, tab: any) => void>,
+    onRemoved: [] as Array<(tabId: number) => void>,
   }
   const captureInto = (arr: any[]) => ({ addListener: (cb: any) => arr.push(cb) })
 
+  // Recorded calls + programmable behavior for the newer surfaces.
+  const calls = {
+    executeScript: [] as any[],
+    tabsCreate: [] as any[],
+  }
+  let executeScriptImpl: (injection: any) => Promise<any> = async () => [{ result: null }]
+  let nextTabId = 100
+
   return {
     _handlers: handlers,
+    _calls: calls,
+    /** Override what chrome.scripting.executeScript resolves to (or throws). */
+    _setExecuteScript(fn: (injection: any) => Promise<any>) {
+      executeScriptImpl = fn
+    },
+    /** Deliver a message with an explicit sender (e.g. `{tab: {id: 5}}`). */
+    _sendMessage: (msg: any, sender: any = {}) => mockSendMessage(msg, sender),
     storage: {
       local: makeArea(local, 'local'),
       session: makeArea(session, 'session'),
@@ -77,8 +95,19 @@ export function makeChrome(
       setBadgeBackgroundColor: async () => {},
       setBadgeTextColor: async () => {},
     },
+    scripting: {
+      executeScript: async (injection: any) => {
+        calls.executeScript.push(injection)
+        return executeScriptImpl(injection)
+      },
+    },
     tabs: {
-      create: async () => {},
+      create: async (props: any) => {
+        calls.tabsCreate.push(props)
+        return { id: nextTabId++, ...props }
+      },
+      onUpdated: captureInto(handlers.onUpdated),
+      onRemoved: captureInto(handlers.onRemoved),
     },
     runtime: {
       getURL: (p: string) => 'chrome-extension://testid' + p,
@@ -86,7 +115,28 @@ export function makeChrome(
       onInstalled: captureInto(handlers.onInstalled),
       onStartup: captureInto(handlers.onStartup),
       onConnect: captureInto(handlers.onConnect),
+      onMessage: captureInto(handlers.onMessage),
+      sendMessage: (msg: any) => mockSendMessage(msg, {}),
     },
+  }
+
+  // Mirrors MV3 promise-style messaging: handlers run in order; a handler
+  // returning true keeps sendResponse usable past its synchronous return.
+  function mockSendMessage(msg: any, sender: any): Promise<any> {
+    return new Promise((resolve) => {
+      let responded = false
+      const sendResponse = (v: any) => {
+        if (!responded) {
+          responded = true
+          resolve(v)
+        }
+      }
+      let keepAlive = false
+      for (const h of handlers.onMessage) {
+        if (h(msg, sender, sendResponse) === true) keepAlive = true
+      }
+      if (!keepAlive && !responded) resolve(undefined)
+    })
   }
 }
 

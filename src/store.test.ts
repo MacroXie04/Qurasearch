@@ -134,6 +134,32 @@ describe('backup import', () => {
     expect(s.items.map((i) => i.id)).toEqual(['i1', 'i2'])
     expect(s.pinnedGroupId).toBe('g2')
   })
+
+  it('keeps a valid locator and strips malformed ones, keeping the item', async () => {
+    const validLocator = { v: 1, exact: 'sel text', prefix: 'a', suffix: 'b', selector: '#x' }
+    const store = await freshStore()
+    await store.importBackup(
+      {
+        version: 1,
+        exportedAt: 0,
+        groups: [],
+        items: [
+          { ...itm('ok', null), locator: validLocator },
+          { ...itm('badver', null), locator: { ...validLocator, v: 2 } },
+          { ...itm('badshape', null), locator: { v: 1, exact: 7 } },
+          { ...itm('oversize', null), locator: { ...validLocator, selector: 's'.repeat(2000) } },
+        ] as Item[],
+        pinnedGroupId: null,
+      },
+      'replace',
+    )
+    const s = store.getSnapshot()
+    expect(s.items).toHaveLength(4)
+    expect(s.items.find((i) => i.id === 'ok')!.locator).toEqual(validLocator)
+    for (const id of ['badver', 'badshape', 'oversize']) {
+      expect(s.items.find((i) => i.id === id)!.locator).toBeUndefined()
+    }
+  })
 })
 
 describe('selectors', () => {

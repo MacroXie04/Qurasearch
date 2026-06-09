@@ -16,6 +16,9 @@ import { MdMenuItem } from '@material/web/menu/menu-item.js'
 import { MdDivider } from '@material/web/divider/divider.js'
 import { MdDialog } from '@material/web/dialog/dialog.js'
 import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js'
+import { MdCheckbox } from '@material/web/checkbox/checkbox.js'
+import { MdRadio } from '@material/web/radio/radio.js'
+import { MdOutlinedButton } from '@material/web/button/outlined-button.js'
 
 export const IconButton = createComponent({
   react: React,
@@ -84,4 +87,24 @@ export const OutlinedTextField = createComponent({
   tagName: 'md-outlined-text-field',
   elementClass: MdOutlinedTextField,
   events: { onTfInput: 'input', onTfChange: 'change' },
+})
+
+export const Checkbox = createComponent({
+  react: React,
+  tagName: 'md-checkbox',
+  elementClass: MdCheckbox,
+  events: { onChange: 'change' },
+})
+
+export const Radio = createComponent({
+  react: React,
+  tagName: 'md-radio',
+  elementClass: MdRadio,
+  events: { onChange: 'change' },
+})
+
+export const OutlinedButton = createComponent({
+  react: React,
+  tagName: 'md-outlined-button',
+  elementClass: MdOutlinedButton,
 })

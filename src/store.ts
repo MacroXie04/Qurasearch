@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from 'react'
 import { type Backup, BACKUP_VERSION, type Group, type Item, PALETTE } from './types'
 import { getLocalData, uid, type LastCaptured, type LocalData } from './storage'
+import { sanitizeLocator } from './locate/locator'
 
 export interface StoreState {
   groups: Group[]
@@ -245,6 +246,7 @@ function sanitizeImport(rawGroups: unknown, rawItems: unknown): { groups: Group[
     if (typeof o.id !== 'string' || seenI.has(o.id) || typeof o.text !== 'string') continue
     seenI.add(o.id)
     const groupId = typeof o.groupId === 'string' && groupIds.has(o.groupId) ? o.groupId : null
+    const locator = sanitizeLocator(o.locator)
     items.push({
       id: o.id,
       text: o.text,
@@ -254,6 +256,7 @@ function sanitizeImport(rawGroups: unknown, rawItems: unknown): { groups: Group[
       groupId,
       order: num(o.order, now),
       createdAt: num(o.createdAt, now),
+      ...(locator ? { locator } : {}),
     })
   }
   return { groups, items }

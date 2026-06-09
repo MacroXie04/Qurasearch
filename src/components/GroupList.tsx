@@ -12,6 +12,7 @@ import {
   UploadIcon,
   PushPinIcon,
   BookmarkIcon,
+  ShareIcon,
 } from '../icons'
 
 interface GroupListProps {
@@ -20,6 +21,7 @@ interface GroupListProps {
   onOpenInbox: () => void
   onNewGroup: () => void
   onSearch: () => void
+  onOpenExport: () => void
   onExport: () => void
   onImport: () => void
 }
@@ -30,6 +32,7 @@ export function GroupList({
   onOpenInbox,
   onNewGroup,
   onSearch,
+  onOpenExport,
   onExport,
   onImport,
 }: GroupListProps) {
@@ -38,6 +41,8 @@ export function GroupList({
   const noData = state.groups.length === 0 && state.items.length === 0
 
   const overflow: MenuEntry[] = [
+    { key: 'export-page', label: 'Export…', leading: <ShareIcon />, onClick: onOpenExport },
+    { key: 'd1', divider: true },
     { key: 'export', label: 'Export backup', leading: <DownloadIcon />, onClick: onExport },
     { key: 'import', label: 'Import backup', leading: <UploadIcon />, onClick: onImport },
   ]
