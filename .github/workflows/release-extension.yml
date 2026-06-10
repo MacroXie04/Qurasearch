@@ -1,0 +1,63 @@
+name: Release extension
+
+on:
+  push:
+    tags: ['ext-v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck -w apps/extension
+
+      - name: Unit tests
+        run: npm test -w apps/extension
+
+      - name: Build extension
+        run: npm run build -w apps/extension
+
+      - name: Verify bundle is CSP-safe (no eval)
+        run: |
+          if grep -rEn "\beval\(|new Function\(" apps/extension/dist --include='*.js'; then
+            echo "::error::Found eval/new Function in the bundle — violates the MV3 CSP (script-src 'self')"
+            exit 1
+          fi
+          echo "OK: no eval/new Function in any built JS"
+
+      - name: Derive version from tag
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#ext-v}" >> "$GITHUB_ENV"
+
+      - name: Package extension zip
+        run: |
+          cd apps/extension/dist
+          zip -r "$GITHUB_WORKSPACE/qurasearch-${VERSION}.zip" .
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: '${{ github.token }}'
+        run: gh release create "$GITHUB_REF_NAME" --title "Extension v${VERSION}" --generate-notes "qurasearch-${VERSION}.zip"
+
+      # TODO(engineering.md §7): auto-publish to the Chrome Web Store via its API
+      # using the CHROME_WEBSTORE_* secrets once the listing exists.
+      # - name: Publish to Chrome Web Store
+      #   env:
+      #     CHROME_WEBSTORE_EXTENSION_ID: '${{ secrets.CHROME_WEBSTORE_EXTENSION_ID }}'
+      #     CHROME_WEBSTORE_CLIENT_ID: '${{ secrets.CHROME_WEBSTORE_CLIENT_ID }}'
+      #     CHROME_WEBSTORE_CLIENT_SECRET: '${{ secrets.CHROME_WEBSTORE_CLIENT_SECRET }}'
+      #     CHROME_WEBSTORE_REFRESH_TOKEN: '${{ secrets.CHROME_WEBSTORE_REFRESH_TOKEN }}'
+      #   run: echo "Upload qurasearch-${VERSION}.zip via the Chrome Web Store API"

@@ -1,53 +1,17 @@
 {
   "name": "qurasearch",
-  "version": "1.0.0",
   "private": true,
-  "description": "Qurasearch — save selected text from any page into the Chrome side panel, organized into groups. Manifest V3.",
+  "description": "Qurasearch monorepo — MV3 web-clipper extension, self-hostable E2E sync server, shared protocol types.",
   "type": "module",
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "watch": "vite build --watch --mode development",
-    "gen-icons": "node scripts/gen-icons.mjs",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "check": "npm run check --workspaces --if-present"
   },
-  "dependencies": {
-    "@dnd-kit/core": "^6.3.1",
-    "@dnd-kit/sortable": "^10.0.0",
-    "@dnd-kit/utilities": "^3.2.2",
-    "@lit/react": "^1.0.8",
-    "@material/web": "^2.4.1",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7"
-  },
-  "devDependencies": {
-    "@crxjs/vite-plugin": "^2.5.0",
-    "@eslint/js": "^9.39.4",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/react": "^16.3.2",
-    "@types/chrome": "^0.1.43",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^4.7.0",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "eslint-plugin-simple-import-sort": "^13.0.0",
-    "globals": "^17.6.0",
-    "jsdom": "^29.1.1",
-    "prettier": "^3.8.4",
-    "sharp": "^0.34.5",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.0",
-    "vite": "^6.4.3",
-    "vitest": "^4.1.8"
+  "engines": {
+    "node": ">=20"
   }
 }

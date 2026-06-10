@@ -1,0 +1,16 @@
+.git
+node_modules
+**/node_modules
+apps/extension/dist
+apps/extension/qurasearch.zip
+apps/server/dist
+packages/shared/dist
+coverage
+docs
+.github
+.idea
+.claude
+.DS_Store
+*.zip
+**/.env
+**/.env.*

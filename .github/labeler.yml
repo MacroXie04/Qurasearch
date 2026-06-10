@@ -1,0 +1,19 @@
+'area:extension':
+  - changed-files:
+      - any-glob-to-any-file: 'apps/extension/**'
+
+'area:server':
+  - changed-files:
+      - any-glob-to-any-file: 'apps/server/**'
+
+'area:shared':
+  - changed-files:
+      - any-glob-to-any-file: 'packages/shared/**'
+
+'area:ci':
+  - changed-files:
+      - any-glob-to-any-file: '.github/**'
+
+'type:docs':
+  - changed-files:
+      - any-glob-to-any-file: 'docs/**'

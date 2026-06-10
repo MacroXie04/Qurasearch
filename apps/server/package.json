@@ -1,0 +1,38 @@
+{
+  "name": "@qurasearch/server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Qurasearch sync server — thin, content-blind Hono backend (self-hosted).",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node --env-file-if-exists=.env dist/index.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "migrate:check": "echo 'migrate:check: no migrations yet (lands with phase 1 — docs/sync-and-accounts.md §15)'"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.0.4",
+    "@qurasearch/shared": "*",
+    "hono": "^4.12.25",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/node": "^25.9.2",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.0",
+    "vitest": "^4.1.8"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
