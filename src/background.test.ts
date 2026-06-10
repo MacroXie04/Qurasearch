@@ -1,4 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
 import { installChrome, type MockChrome } from './test/chromeMock'
 import { UNGROUPED } from './types'
 
@@ -97,7 +98,13 @@ describe('background capture routing', () => {
 })
 
 describe('capture-time locator', () => {
-  const validLocator = { v: 1, exact: 'hello world', prefix: 'pre ', suffix: ' suf', selector: 'body > p:nth-of-type(1)' }
+  const validLocator = {
+    v: 1,
+    exact: 'hello world',
+    prefix: 'pre ',
+    suffix: ' suf',
+    selector: 'body > p:nth-of-type(1)',
+  }
 
   it('attaches a sanitized locator from the page script result', async () => {
     const { c, onClicked } = await loadBackground()
@@ -173,7 +180,10 @@ describe('jump orchestration', () => {
     const { c } = await loadBackground({ items: [seedItem({ locator })] })
     const res = await c._sendMessage({ type: 'qura:jump', itemId: 'it1' })
     expect(res).toEqual({ ok: true })
-    expect(c._calls.tabsCreate[0]).toMatchObject({ url: 'https://example.com/article', active: true })
+    expect(c._calls.tabsCreate[0]).toMatchObject({
+      url: 'https://example.com/article',
+      active: true,
+    })
     const { pendingJumps } = await c.storage.session.get('pendingJumps')
     const entry = Object.values(pendingJumps)[0] as Record<string, unknown>
     expect(entry).toMatchObject({ itemId: 'it1', text: 'clip text', locator })

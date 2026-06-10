@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { type StoreState, sortedGroups } from '../store'
-import { AppBar } from './AppBar'
-import { EmptyState } from './EmptyState'
-import { ClipCard, type ClipActions } from './ClipCard'
+
+import { ArrowBackIcon, CloseIcon, SearchIcon } from '../icons'
 import { IconButton } from '../md'
-import { ArrowBackIcon, SearchIcon, CloseIcon } from '../icons'
+import { sortedGroups, type StoreState } from '../store'
+import { AppBar } from './AppBar'
+import { type ClipActions, ClipCard } from './ClipCard'
+import { EmptyState } from './EmptyState'
 
 export function SearchView({
   state,

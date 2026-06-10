@@ -1,4 +1,5 @@
 import { defineManifest } from '@crxjs/vite-plugin'
+
 import pkg from './package.json'
 
 // Manifest V3 authored for @crxjs. Icons are referenced by their source path;

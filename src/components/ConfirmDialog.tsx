@@ -1,5 +1,6 @@
 import { type CSSProperties } from 'react'
-import { Dialog, TextButton, FilledButton } from '../md'
+
+import { Dialog, FilledButton, TextButton } from '../md'
 
 export interface ConfirmState {
   open: boolean

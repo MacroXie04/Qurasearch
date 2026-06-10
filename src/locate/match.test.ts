@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { describe, it, expect, afterEach } from 'vitest'
-import { buildTextIndex, findMatch, normalize, rangeFromIndex } from './match'
+import { afterEach, describe, expect, it } from 'vitest'
+
 import type { Locator } from './locator'
+import { buildTextIndex, findMatch, normalize, rangeFromIndex } from './match'
 
 function setBody(html: string) {
   document.body.innerHTML = html
@@ -160,7 +161,12 @@ describe('findMatch tier 2 (context bracket)', () => {
     setBody('<p id="target">totally different content now</p>')
     const res = findMatch(document, {
       text: 'the original sentence',
-      locator: loc({ exact: 'the original sentence', prefix: 'ab ', suffix: ' cd', selector: '#target' }),
+      locator: loc({
+        exact: 'the original sentence',
+        prefix: 'ab ',
+        suffix: ' cd',
+        selector: '#target',
+      }),
     })
     // tier 2 requires >=16 chars of context on both sides → tier 3 element
     expect(res.kind).toBe('element')
@@ -204,7 +210,10 @@ describe('findMatch tier 3 (selector descent)', () => {
     setBody('<div id="box"><p>completely unrelated replacement copy</p></div>')
     const res = findMatch(document, {
       text: 'the original sentence that vanished entirely from here',
-      locator: loc({ exact: 'the original sentence that vanished entirely from here', selector: '#box' }),
+      locator: loc({
+        exact: 'the original sentence that vanished entirely from here',
+        selector: '#box',
+      }),
     })
     expect(res.kind).toBe('element')
     if (res.kind === 'element') expect(res.element.id).toBe('box')

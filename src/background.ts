@@ -2,11 +2,11 @@
 // Responsibilities: context menu, capture routing, opening the side panel,
 // detecting panel close, the toolbar badge, and jump-to-highlight
 // orchestration (open a clip's source tab, then inject the highlighter).
-import { type Item, type Locator, type PendingJump, type QuraMessage } from './types'
-import { getLocalData, resolveTargetGroupId, uid, type LastCaptured } from './storage'
-import { sanitizeLocator } from './locate/locator'
 import { collectLocator } from './locate/capture'
 import highlightScript from './locate/highlight.entry.ts?script&iife'
+import { sanitizeLocator } from './locate/locator'
+import { getLocalData, type LastCaptured, resolveTargetGroupId, uid } from './storage'
+import { type Item, type Locator, type PendingJump, type QuraMessage } from './types'
 
 const MENU_ID = 'qura-add'
 const BADGE_COLOR = '#6750A4'

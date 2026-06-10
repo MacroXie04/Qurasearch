@@ -1,6 +1,7 @@
-import { useId, useState, type ReactNode } from 'react'
-import { IconButton, Menu, MenuItem, Divider } from '../md'
-import { MoreIcon, CheckIcon } from '../icons'
+import { type ReactNode, useId, useState } from 'react'
+
+import { CheckIcon, MoreIcon } from '../icons'
+import { Divider, IconButton, Menu, MenuItem } from '../md'
 
 export interface MenuEntry {
   key: string

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
+
+import { Dialog, FilledButton, OutlinedTextField, TextButton } from '../md'
 import { PALETTE } from '../types'
-import { Dialog, OutlinedTextField, TextButton, FilledButton } from '../md'
 import { ColorPicker } from './ColorPicker'
 
 export interface GroupDialogState {

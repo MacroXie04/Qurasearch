@@ -1,7 +1,9 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
 import './theme.css'
 import './app.css'
+
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+
 import { App } from './App'
 import { initStore } from './store'
 

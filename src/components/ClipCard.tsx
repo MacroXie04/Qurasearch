@@ -1,12 +1,13 @@
-import { useState, type CSSProperties } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { type Group, type Item } from '../types'
-import { FaviconImg } from './FaviconImg'
-import { OverflowMenu, type MenuEntry } from './OverflowMenu'
+import { type CSSProperties, useState } from 'react'
+
+import { CopyIcon, DeleteIcon, DragIcon, OpenInNewIcon, QuoteIcon } from '../icons'
 import { IconButton } from '../md'
-import { CopyIcon, OpenInNewIcon, DeleteIcon, QuoteIcon, DragIcon } from '../icons'
+import { type Group, type Item } from '../types'
 import { isLongText, prettyHost, relativeTime } from '../util'
+import { FaviconImg } from './FaviconImg'
+import { type MenuEntry, OverflowMenu } from './OverflowMenu'
 
 export interface ClipActions {
   onCopy: (item: Item) => void
@@ -64,11 +65,21 @@ export function ClipCard({
     { key: 'd1', divider: true },
     ...moveEntries,
     { key: 'd2', divider: true },
-    { key: 'del', label: 'Delete', leading: <DeleteIcon />, danger: true, onClick: () => onDelete(item) },
+    {
+      key: 'del',
+      label: 'Delete',
+      leading: <DeleteIcon />,
+      danger: true,
+      onClick: () => onDelete(item),
+    },
   ]
 
   return (
-    <article ref={setNodeRef} style={style} className={'clip-card' + (isDragging ? ' dragging' : '')}>
+    <article
+      ref={setNodeRef}
+      style={style}
+      className={'clip-card' + (isDragging ? ' dragging' : '')}
+    >
       <div className="clip-head">
         <button
           type="button"

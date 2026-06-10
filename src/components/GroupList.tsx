@@ -1,19 +1,19 @@
-import { type StoreState, sortedGroups, countForGroup } from '../store'
+import {
+  AddIcon,
+  BookmarkIcon,
+  ChevronRightIcon,
+  DownloadIcon,
+  InboxIcon,
+  PushPinIcon,
+  SearchIcon,
+  ShareIcon,
+  UploadIcon,
+} from '../icons'
+import { Fab, IconButton, List, ListItem } from '../md'
+import { countForGroup, sortedGroups, type StoreState } from '../store'
 import { AppBar } from './AppBar'
 import { EmptyState } from './EmptyState'
-import { OverflowMenu, type MenuEntry } from './OverflowMenu'
-import { IconButton, List, ListItem, Fab } from '../md'
-import {
-  SearchIcon,
-  InboxIcon,
-  ChevronRightIcon,
-  AddIcon,
-  DownloadIcon,
-  UploadIcon,
-  PushPinIcon,
-  BookmarkIcon,
-  ShareIcon,
-} from '../icons'
+import { type MenuEntry, OverflowMenu } from './OverflowMenu'
 
 interface GroupListProps {
   state: StoreState
@@ -123,7 +123,13 @@ export function GroupList({
       </div>
 
       <div className="fab-wrap">
-        <Fab variant="primary" size="medium" label="New group" aria-label="New group" onClick={onNewGroup}>
+        <Fab
+          variant="primary"
+          size="medium"
+          label="New group"
+          aria-label="New group"
+          onClick={onNewGroup}
+        >
           <span slot="icon">
             <AddIcon />
           </span>

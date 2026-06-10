@@ -1,5 +1,5 @@
-import { PALETTE } from '../types'
 import { CheckIcon } from '../icons'
+import { PALETTE } from '../types'
 
 export function ColorPicker({
   value,

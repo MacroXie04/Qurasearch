@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
+
 import { resolveTargetGroupId } from './storage'
-import { UNGROUPED, type Group } from './types'
+import { type Group, UNGROUPED } from './types'
 
 const g = (id: string): Group => ({ id, name: id, color: '#000000', order: 0, createdAt: 0 })
 const groups = [g('g1'), g('g2')]

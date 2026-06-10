@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+
 import { prettyHost } from '../util'
 
 // Favicon from Chrome's own cache via the `favicon` permission. The side panel

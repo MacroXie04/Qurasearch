@@ -1,9 +1,10 @@
 // Single source of truth for the side panel: reads/writes chrome.storage and
 // pushes updates into React via useSyncExternalStore + chrome.storage.onChanged.
 import { useSyncExternalStore } from 'react'
-import { type Backup, BACKUP_VERSION, type Group, type Item, PALETTE } from './types'
-import { getLocalData, uid, type LastCaptured, type LocalData } from './storage'
+
 import { sanitizeLocator } from './locate/locator'
+import { getLocalData, type LastCaptured, type LocalData, uid } from './storage'
+import { type Backup, BACKUP_VERSION, type Group, type Item, PALETTE } from './types'
 
 export interface StoreState {
   groups: Group[]

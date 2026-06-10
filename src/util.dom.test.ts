@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi } from 'vitest'
-import { downloadText, downloadJson } from './util'
+import { describe, expect, it, vi } from 'vitest'
+
+import { downloadJson, downloadText } from './util'
 
 function captureNextAnchor(): { current: HTMLAnchorElement | null } {
   const captured: { current: HTMLAnchorElement | null } = { current: null }

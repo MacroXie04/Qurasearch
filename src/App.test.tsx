@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, cleanup, screen, act } from '@testing-library/react'
+import { act, cleanup, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import { installChrome } from './test/chromeMock'
 
 // Replace the Lit-based @material/web wrappers with light host elements so <App/>

@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { relativeTime, prettyHost, isLongText } from './util'
+import { describe, expect, it } from 'vitest'
+
+import { isLongText, prettyHost, relativeTime } from './util'
 
 describe('relativeTime', () => {
   it('reports "just now" for a fresh timestamp', () => {

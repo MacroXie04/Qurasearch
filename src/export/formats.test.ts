@@ -1,16 +1,17 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
+
 import {
   csvField,
   escapeHtml,
   exportFilename,
   exportMime,
+  type ExportSection,
   formatCsv,
   formatExport,
   formatHtml,
   formatMd,
   formatTxt,
   safeHref,
-  type ExportSection,
 } from './formats'
 
 const clip = (text: string, url = 'https://e.com/a', over = {}) => ({
@@ -22,7 +23,9 @@ const clip = (text: string, url = 'https://e.com/a', over = {}) => ({
   ...over,
 })
 
-const one: ExportSection[] = [{ groupName: 'Work', clips: [clip('first clip'), clip('second clip')] }]
+const one: ExportSection[] = [
+  { groupName: 'Work', clips: [clip('first clip'), clip('second clip')] },
+]
 const two: ExportSection[] = [
   { groupName: 'Work', clips: [clip('work clip')] },
   { groupName: 'Play', clips: [clip('play clip')] },
@@ -150,7 +153,9 @@ describe('formatCsv / csvField', () => {
   })
 
   it('does not crash on an out-of-range createdAt (corrupt imported backup)', () => {
-    const s: ExportSection[] = [{ groupName: 'G', clips: [clip('x', 'https://e.com/a', { createdAt: 1e30 })] }]
+    const s: ExportSection[] = [
+      { groupName: 'G', clips: [clip('x', 'https://e.com/a', { createdAt: 1e30 })] },
+    ]
     expect(() => formatCsv(s)).not.toThrow()
     const lines = formatCsv(s).slice(1).split('\r\n')
     expect(lines[1]).toBe('x,https://e.com/a,Title,e.com,G,') // empty timestamp, no throw

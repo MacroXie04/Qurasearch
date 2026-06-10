@@ -1,6 +1,7 @@
-import { defineConfig, type Plugin } from 'vite'
-import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
+import react from '@vitejs/plugin-react'
+import { defineConfig, type Plugin } from 'vite'
+
 import manifest from './manifest.config'
 
 // crxjs's `?script&iife` import auto-adds the highlighter to

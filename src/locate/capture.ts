@@ -24,7 +24,13 @@ export function collectLocator(): unknown {
     let el = start.nodeType === Node.ELEMENT_NODE ? (start as Element) : start.parentElement
     while (el && el !== document.body) {
       const d = getComputedStyle(el).display
-      if (d === 'block' || d === 'list-item' || d === 'table-cell' || d === 'flex' || d === 'grid') {
+      if (
+        d === 'block' ||
+        d === 'list-item' ||
+        d === 'table-cell' ||
+        d === 'flex' ||
+        d === 'grid'
+      ) {
         return el
       }
       el = el.parentElement

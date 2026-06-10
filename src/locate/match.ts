@@ -209,7 +209,8 @@ export function findMatch(doc: Document, payload: JumpPayload): MatchResult {
     let bestScore = -1
     for (const occ of occurrences) {
       let score = 0
-      if (normPrefix) score += commonSuffixLen(index.norm.slice(0, Math.max(0, occ - leadGap)), normPrefix)
+      if (normPrefix)
+        score += commonSuffixLen(index.norm.slice(0, Math.max(0, occ - leadGap)), normPrefix)
       if (normSuffix)
         score += commonPrefixLen(index.norm.slice(occ + needle.length + trailGap), normSuffix)
       if (selSpan) {

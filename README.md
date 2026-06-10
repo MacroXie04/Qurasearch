@@ -20,11 +20,13 @@ The thing you install is the prebuilt `dist/` folder. You do **not** need Node o
 to run any build.
 
 **Option A — load the folder**
+
 1. Open `chrome://extensions`.
 2. Turn on **Developer mode** (top‑right).
 3. Click **Load unpacked** and select the **`dist/`** folder.
 
 **Option B — load the zip**
+
 1. Unzip **`qurasearch.zip`** (its `manifest.json` is at the root of the archive).
 2. Open `chrome://extensions` → **Developer mode** → **Load unpacked** → select the
    unzipped folder.
@@ -40,13 +42,13 @@ open the panel any time.
   panel opens and a snackbar confirms where it was saved (with **Undo**).
 - **Groups:** tap **New group** (color + name). Open a group’s **⋮** menu to rename,
   recolor, **set it as the default group**, or delete it (deleting moves its clips
-  back to *Ungrouped*).
+  back to _Ungrouped_).
 - **Where new clips land** (priority):
   1. the **group you’re currently viewing**,
   2. otherwise the **default group** (if you’ve set one),
   3. otherwise **Ungrouped**.
-  Closing the panel or returning Home “leaves” the current group. The Inbox
-  (*Ungrouped*) view always routes new clips to Ungrouped.
+     Closing the panel or returning Home “leaves” the current group. The Inbox
+     (_Ungrouped_) view always routes new clips to Ungrouped.
 - **Cards:** copy text, open the source, **Move to group…**, delete (undoable), and
   expand/collapse long clips. Drag the handle to reorder within a group.
 - **Jump back & highlight:** **Open source** reopens the page, auto‑scrolls to the

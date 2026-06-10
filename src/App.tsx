@@ -1,33 +1,34 @@
 import { useEffect, useRef, useState } from 'react'
-import { type Backup, type Group, PALETTE, UNGROUPED, type View } from './types'
-import {
-  useStore,
-  sortedGroups,
-  itemsForGroup,
-  groupName,
-  addGroup,
-  updateGroup,
-  deleteGroup,
-  setDefaultGroup,
-  deleteItem,
-  restoreItem,
-  moveItem,
-  reorderItems,
-  setActiveGroup,
-  clearLastCaptured,
-  setStoreErrorHandler,
-  buildBackup,
-  importBackup,
-} from './store'
-import { downloadJson, readJsonFile, todayStamp } from './util'
+
+import { type ClipActions } from './components/ClipCard'
+import { ConfirmDialog, type ConfirmState } from './components/ConfirmDialog'
+import { GroupDialog, type GroupDialogState } from './components/GroupDialog'
 import { GroupList } from './components/GroupList'
 import { GroupView } from './components/GroupView'
 import { SearchView } from './components/SearchView'
-import { GroupDialog, type GroupDialogState } from './components/GroupDialog'
-import { ConfirmDialog, type ConfirmState } from './components/ConfirmDialog'
 import { Snackbar, type SnackbarData } from './components/Snackbar'
-import { type ClipActions } from './components/ClipCard'
-import { Dialog, TextButton, FilledButton } from './md'
+import { Dialog, FilledButton, TextButton } from './md'
+import {
+  addGroup,
+  buildBackup,
+  clearLastCaptured,
+  deleteGroup,
+  deleteItem,
+  groupName,
+  importBackup,
+  itemsForGroup,
+  moveItem,
+  reorderItems,
+  restoreItem,
+  setActiveGroup,
+  setDefaultGroup,
+  setStoreErrorHandler,
+  sortedGroups,
+  updateGroup,
+  useStore,
+} from './store'
+import { type Backup, type Group, PALETTE, UNGROUPED, type View } from './types'
+import { downloadJson, readJsonFile, todayStamp } from './util'
 
 export function App() {
   const s = useStore()
@@ -60,7 +61,12 @@ export function App() {
 
   function showSnackbar(message: string, action?: { label: string; onAction: () => void }) {
     snackSeq.current += 1
-    setSnackbar({ id: snackSeq.current, message, actionLabel: action?.label, onAction: action?.onAction })
+    setSnackbar({
+      id: snackSeq.current,
+      message,
+      actionLabel: action?.label,
+      onAction: action?.onAction,
+    })
   }
 
   // Keep session.activeGroupId in sync with the current view (drives capture routing).
@@ -96,7 +102,6 @@ export function App() {
   useEffect(() => {
     setStoreErrorHandler((message) => showSnackbar(message))
     return () => setStoreErrorHandler(() => {})
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // ---- navigation ----
@@ -150,7 +155,13 @@ export function App() {
   const openNewGroup = () =>
     setGroupDialog({ open: true, mode: 'new', initialName: '', initialColor: PALETTE[0] })
   const openEditGroup = (g: Group) =>
-    setGroupDialog({ open: true, mode: 'edit', groupId: g.id, initialName: g.name, initialColor: g.color })
+    setGroupDialog({
+      open: true,
+      mode: 'edit',
+      groupId: g.id,
+      initialName: g.name,
+      initialColor: g.color,
+    })
 
   const submitGroup = (name: string, color: string) => {
     if (groupDialog.mode === 'new') {
@@ -204,7 +215,12 @@ export function App() {
         showSnackbar('Invalid backup file')
         return
       }
-      setImportState({ open: true, backup: data, groups: data.groups.length, items: data.items.length })
+      setImportState({
+        open: true,
+        backup: data,
+        groups: data.groups.length,
+        items: data.items.length,
+      })
     } catch {
       showSnackbar('Could not read file')
     }

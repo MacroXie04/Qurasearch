@@ -1,34 +1,35 @@
 import {
-  DndContext,
   closestCenter,
-  PointerSensor,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
+  PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from '@dnd-kit/core'
 import {
+  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-  arrayMove,
 } from '@dnd-kit/sortable'
+
+import {
+  ArrowBackIcon,
+  ColorIcon,
+  DeleteIcon,
+  EditIcon,
+  InboxIcon,
+  PushPinIcon,
+  QuoteIcon,
+} from '../icons'
+import { IconButton } from '../md'
 import { type Group, type Item } from '../types'
 import { AppBar } from './AppBar'
 import { CaptureBanner } from './CaptureBanner'
+import { type ClipActions, SortableClipCard } from './ClipCard'
 import { EmptyState } from './EmptyState'
-import { SortableClipCard, type ClipActions } from './ClipCard'
-import { OverflowMenu, type MenuEntry } from './OverflowMenu'
-import { IconButton } from '../md'
-import {
-  ArrowBackIcon,
-  InboxIcon,
-  EditIcon,
-  ColorIcon,
-  PushPinIcon,
-  DeleteIcon,
-  QuoteIcon,
-} from '../icons'
+import { type MenuEntry, OverflowMenu } from './OverflowMenu'
 
 interface GroupViewProps extends ClipActions {
   /** null = the Inbox / Ungrouped view. */
@@ -81,7 +82,12 @@ export function GroupView(props: GroupViewProps) {
   const groupMenu: MenuEntry[] = group
     ? [
         { key: 'rename', label: 'Rename', leading: <EditIcon />, onClick: props.onRename },
-        { key: 'color', label: 'Change color', leading: <ColorIcon />, onClick: props.onChangeColor },
+        {
+          key: 'color',
+          label: 'Change color',
+          leading: <ColorIcon />,
+          onClick: props.onChangeColor,
+        },
         {
           key: 'default',
           label: isDefault ? 'Unset default group' : 'Set as default group',
@@ -123,7 +129,11 @@ export function GroupView(props: GroupViewProps) {
             }
           />
         ) : (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
             <SortableContext items={ids} strategy={verticalListSortingStrategy}>
               <div className="clip-list">
                 {items.map((it) => (

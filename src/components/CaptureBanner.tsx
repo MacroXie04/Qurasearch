@@ -1,4 +1,4 @@
-import { InfoIcon, InboxIcon, BookmarkIcon } from '../icons'
+import { BookmarkIcon, InboxIcon, InfoIcon } from '../icons'
 
 export type CaptureTarget = 'inbox' | 'default' | 'group'
 

@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
-import { describe, it, expect, afterEach, vi } from 'vitest'
-import { render, cleanup, fireEvent } from '@testing-library/react'
-import { ColorPicker } from './ColorPicker'
+import { cleanup, fireEvent, render } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
 import { PALETTE } from '../types'
+import { ColorPicker } from './ColorPicker'
 
 afterEach(cleanup)
 

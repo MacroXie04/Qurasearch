@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
 import { installChrome } from './test/chromeMock'
-import type { Item, Group, Backup } from './types'
+import type { Backup, Group, Item } from './types'
 
 const grp = (id: string, over: Partial<Group> = {}): Group => ({
   id,

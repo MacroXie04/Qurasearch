@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { describe, it, expect, afterEach } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
+
 import { collectLocator } from './capture'
 import { sanitizeLocator } from './locator'
 
@@ -13,12 +14,7 @@ function setBody(html: string) {
   document.body.innerHTML = html
 }
 
-function selectRange(
-  startNode: Node,
-  startOffset: number,
-  endNode: Node,
-  endOffset: number,
-): void {
+function selectRange(startNode: Node, startOffset: number, endNode: Node, endOffset: number): void {
   const range = document.createRange()
   range.setStart(startNode, startOffset)
   range.setEnd(endNode, endOffset)
@@ -49,9 +45,7 @@ describe('collectLocator (rehydrated — must be self-contained)', () => {
     expect(locator!.prefix.endsWith('The ')).toBe(true)
     expect(locator!.suffix.startsWith(' jumps over')).toBe(true)
     expect(locator!.selector).toContain('#content')
-    expect(document.querySelector(locator!.selector)).toBe(
-      document.querySelectorAll('p')[1],
-    )
+    expect(document.querySelector(locator!.selector)).toBe(document.querySelectorAll('p')[1])
     expect(locator!.frameUrl).toBeUndefined()
   })
 

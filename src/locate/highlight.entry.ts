@@ -3,8 +3,8 @@
 // `?script&iife` import in background.ts — it asks the background for its
 // payload (executeScript({files}) cannot pass args), finds the clip with the
 // tiered matcher, then scrolls to it and highlights it.
-import { findMatch } from './match'
 import type { JumpPayload } from '../types'
+import { findMatch } from './match'
 
 const HIGHLIGHT_NAME = 'qurasearch'
 const STYLE_ID = '__qurasearch-style'
@@ -51,6 +51,7 @@ async function main(): Promise<void> {
   let finished = false
   let lastAttempt = 0
   let retryTimer: number | undefined
+  // eslint-disable-next-line prefer-const -- cleanup can run before observer initialization.
   let observer: MutationObserver | undefined
   let bestElement: Element | null = null
   let clearHighlight: (() => void) | undefined
@@ -137,7 +138,11 @@ async function main(): Promise<void> {
       }, wait)
     }
   })
-  observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true })
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  })
 }
 
 function sameOrigin(url: string): boolean {
@@ -223,7 +228,10 @@ function highlightElement(el: Element): () => void {
 
 function pulseOutline(el: Element): () => void {
   el.classList.add('__qurasearch-outline')
-  const timer = window.setTimeout(() => el.classList.remove('__qurasearch-outline'), ELEMENT_PULSE_MS)
+  const timer = window.setTimeout(
+    () => el.classList.remove('__qurasearch-outline'),
+    ELEMENT_PULSE_MS,
+  )
   return () => {
     clearTimeout(timer)
     el.classList.remove('__qurasearch-outline')
