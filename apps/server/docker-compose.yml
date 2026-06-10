@@ -1,0 +1,36 @@
+# Self-host Qurasearch sync (docs/engineering.md §7):
+#   JWT_SECRET=$(openssl rand -base64 48) POSTGRES_PASSWORD=... docker compose up -d
+services:
+  server:
+    image: ghcr.io/macroxie04/qurasearch-server:latest
+    # To build locally instead of pulling from GHCR:
+    # build:
+    #   context: ../..
+    #   dockerfile: apps/server/Dockerfile
+    ports:
+      - "8787:8787"
+    environment:
+      DATABASE_URL: postgresql://qurasearch:${POSTGRES_PASSWORD:-change-me}@db:5432/qurasearch
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET to >=32 random chars}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: qurasearch
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: qurasearch
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qurasearch -d qurasearch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:

@@ -4,5 +4,11 @@ node_modules
 .vite
 .cache
 .idea
+coverage
+.env
+.env.local
+# build output of the importable packages (extension dist/ stays tracked)
+packages/shared/dist/
+apps/server/dist/
 # unzipped copy of qurasearch.zip (manual install testing)
-/qurasearch/
+apps/extension/qurasearch/

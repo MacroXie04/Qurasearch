@@ -6,51 +6,188 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: "${{ github.event_name == 'pull_request' }}"
+
 jobs:
-  test-build:
-    name: Test & build (Node ${{ matrix.node }})
+  changes:
+    runs-on: ubuntu-latest
+    # paths-filter reads the PR file list via the REST API; without
+    # pull-requests:read it 403s, this job fails, and every downstream required
+    # check ends up "skipped" — which branch protection counts as satisfied.
+    permissions:
+      contents: read
+      pull-requests: read
+    # Force-true on push so main always runs the full matrix (engineering.md §1)
+    outputs:
+      shared: "${{ github.event_name == 'push' || steps.filter.outputs.shared == 'true' }}"
+      extension: "${{ github.event_name == 'push' || steps.filter.outputs.extension == 'true' }}"
+      server: "${{ github.event_name == 'push' || steps.filter.outputs.server == 'true' }}"
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
+        id: filter
+        if: github.event_name == 'pull_request'
+        with:
+          filters: |
+            shared:
+              - 'packages/shared/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.github/workflows/ci.yml'
+            extension:
+              - 'apps/extension/**'
+              - 'packages/shared/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.github/workflows/ci.yml'
+            server:
+              - 'apps/server/**'
+              - 'packages/shared/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.github/workflows/ci.yml'
+
+  shared:
+    needs: changes
+    if: >-
+      needs.changes.outputs.shared == 'true' ||
+      needs.changes.outputs.extension == 'true' ||
+      needs.changes.outputs.server == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck -w packages/shared
+
+      - name: Unit tests
+        run: npm test -w packages/shared
+
+      - name: Build
+        run: npm run build -w packages/shared
+
+  extension:
+    name: extension (${{ matrix.node }})
+    needs: [changes, shared]
+    if: "${{ !cancelled() && needs.changes.outputs.extension == 'true' && needs.shared.result == 'success' }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node: ['20', '22']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '${{ matrix.node }}'
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Build shared package
+        # Explicit, even though npm ci's prepare hook usually covers it
+        run: npm run build -w packages/shared
+
       - name: Check formatting
-        run: npm run format:check
+        run: npm run format:check -w apps/extension
 
       - name: Lint
-        run: npm run lint
+        run: npm run lint -w apps/extension
 
       - name: Typecheck
-        run: npm run typecheck
+        run: npm run typecheck -w apps/extension
 
-      - name: Unit tests
-        run: npm test
+      - name: Unit tests (with coverage)
+        run: npm test -w apps/extension -- --coverage
 
       - name: Build extension
-        run: npm run build
+        run: npm run build -w apps/extension
 
       - name: Verify bundle is CSP-safe (no eval)
         run: |
-          if grep -rEn "\beval\(|new Function\(" dist --include='*.js'; then
+          if grep -rEn "\beval\(|new Function\(" apps/extension/dist --include='*.js'; then
             echo "::error::Found eval/new Function in the bundle — violates the MV3 CSP (script-src 'self')"
             exit 1
           fi
           echo "OK: no eval/new Function in any built JS"
 
       - name: Upload built extension
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: qurasearch-dist-node${{ matrix.node }}
-          path: dist
+          path: apps/extension/dist
           if-no-files-found: error
+
+      # Coverage is a CI artifact for now per engineering.md §4
+      # (thresholds arrive with the crypto/sync suites, phases 2–3)
+      - name: Upload coverage report
+        if: matrix.node == '22'
+        uses: actions/upload-artifact@v7
+        with:
+          name: extension-coverage
+          path: apps/extension/coverage
+
+  server:
+    needs: [changes, shared]
+    if: "${{ !cancelled() && needs.changes.outputs.server == 'true' && needs.shared.result == 'success' }}"
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: qurasearch_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      # DB wired now so integration tests just work when they land
+      # (engineering.md §9.2); the skeleton tests don't touch it yet
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/qurasearch_test
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package
+        run: npm run build -w packages/shared
+
+      - name: Lint
+        run: npm run lint -w apps/server
+
+      - name: Typecheck
+        run: npm run typecheck -w apps/server
+
+      - name: Tests
+        run: npm test -w apps/server
+
+      - name: Build
+        run: npm run build -w apps/server
+
+      - name: Check migrations
+        run: npm run migrate:check -w apps/server

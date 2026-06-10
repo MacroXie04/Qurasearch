@@ -1,0 +1,11 @@
+# Code owners (engineering.md §6).
+#
+# Everything requires maintainer review, but the crypto / sync-protocol surface
+# (apps/server, packages/shared) and the CI / supply chain (.github) are listed
+# explicitly: with branch protection's "require review from Code Owners" on,
+# nothing on those paths can merge without a required review.
+
+* @MacroXie04
+/apps/server/ @MacroXie04
+/packages/shared/ @MacroXie04
+/.github/ @MacroXie04
